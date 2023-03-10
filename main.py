@@ -1,4 +1,4 @@
-from chatgpt import GPTHandler
+from gpthandler import GPTHandler
 
 handler = GPTHandler()
 

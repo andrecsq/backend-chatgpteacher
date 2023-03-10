@@ -3,7 +3,13 @@ import openai
 class GPTHandler:
     def __init__(self) -> None:
         self.model = "gpt-3.5-turbo"
-        self.messages = []
+        self.messages = [
+            {
+                "role": "user",
+                "content": "I tried to translate the phrase \"I like turtles\" to the Portuguese phrase \"eu gostar tartaruga\". With this, list all my errors and give me the correct translation.",
+            },
+            
+        ]
 
     def generate_messages(conversation):
         messages = []
@@ -25,7 +31,7 @@ class GPTHandler:
         )
         content = response['choices'][0]['message']['content']
         self.messages.append({
-            "role": "system",
+            "role": "assistant",
             "content": content
         })
         return content
