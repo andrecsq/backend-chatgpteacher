@@ -54,7 +54,6 @@ if __name__ == '__main__':
         try:
             correction_dict = json.loads(correction.strip())
             print("Valid JSON first try")
-            print_big(correction, "This IS a valid JSON")
         except Exception as e:
             print("Trying to convert using ChatGPT")
             correction_processed = handler.convert_to_json(correction)
