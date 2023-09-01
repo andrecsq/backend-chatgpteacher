@@ -1,47 +1,63 @@
 import openai
+import json
 
-from domain.chatgpt.constants import GPT_MODEL, ROLE_SYSTEM, ROLE_USER, API_KEY_PATH
+from domain.chatgpt.constants \
+    import Models, Roles, API_KEY_PATH, INITIAL_PROMPTS
 
 class GPTHandler:
     def __init__(self) -> None:
-        self.model = GPT_MODEL
-        self.system_message = {
-            "role": ROLE_SYSTEM,
-            "content": "you are a system that corrects grammatical errors in a translation. "
-            "you list out and explain each and every one of the errors in a given translation. "
-            "the inputs are the sentence to be translated and the user's translation, which "
-            "should be corrected. do not list out anything that wasn't wrong in the translated "
-            "sentence. if the translation is gramattically correct, only respond with \'correct\'. "
-            "For example:\n"
-            "user: sentence to be translated: \"What kind of music do you like?\""
-            "user's translation: \"Que tipo de música você gosta?\"\n"
-            "assistant: The translation is correct."
-            "user: sentence to be translated: \"eu gosto de vacas\""
-            "user's translation: \"me like cow\""
-            "assistant: The user's translation, \"me like cow,\" contains a few errors:\n"
-            "1. Incorrect Subject Pronoun: \"Me\" is an object pronoun and can't be used as"
-            "the subject of a sentence. The correct subject pronoun to use in this case is \"I.\""
-            "Correction: \"I like cow\"\n"
-            "2. Singular vs. Plural: In the original sentence, \"vacas\" is plural, meaning more than"
-            "one cow. In English, we need to reflect this by using the plural form \"cows.\""
-            "Correction: \"I like cows\"\n"
-            "So, the correct translation of \"eu gosto de vacas\" is \"I like cows.\""
-        }
-
+        self.set_model_to_gpt3()
+        self.initial_prompts = INITIAL_PROMPTS
         openai.api_key_path = API_KEY_PATH
+
+    def set_model_to_gpt3(self) -> None:
+        self.model = Models.GPT3.value
+
+    def set_model_to_gpt4(self) -> None:
+        self.model = Models.GPT4.value
+
+    def get_formatted_user_input(self, phrase, translation):
+        formatted_user_input = "correct this translation:"
+        formatted_user_input +=  "{\n"
+        formatted_user_input += f"\t\"original\": \"{phrase}\",\n"
+        formatted_user_input += f"\t\"translation\": \"{translation}\"\n"
+        formatted_user_input += "}"
+        formatted_user_input += "R:"
+
+        return formatted_user_input
+    
+    def convert_to_json(self, message_to_convert):
+        message = "convert this to a proper JSON. do not output anything other than the JSON. ```"
+        message += message_to_convert
+        message += "```"
+        response = openai.ChatCompletion.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": Roles.USER.value,
+                    "content": message
+                }
+            ]
+        )
+
+        content = response['choices'][0]['message']['content']
+        return content
+
     
     def correct_translation(self, phrase, translation):
         user_translation = {
-            "role": ROLE_USER,
-            "content": f"sentence to be translated: {phrase}"
-            f"user's translation: {translation}",
+            "role": Roles.USER.value,
+            "content": self.get_formatted_user_input(phrase, translation),
         }
 
-        messages_to_send = [self.system_message, user_translation]
+        messages_to_send = self.initial_prompts + [user_translation]
         
         response = openai.ChatCompletion.create(
             model=self.model,
             messages=messages_to_send
         )
+
         content = response['choices'][0]['message']['content']
+        content = content.strip()
+        
         return content

@@ -179,7 +179,7 @@ What's the exchange rate for dollars?,Qual é a taxa de conversão para o dólar
 What's the phone number?,Qual é o número do telefone?,Localização
 Where can I buy tickets?,Onde posso comprar os ingressos?,Localização
 Where would you like to meet?,Onde você gostaria de se encontrar?,Localização
-Which one is better?,Qual deles/delas é melhor?,Localização
+Which one is better?,Quail deles/delas é melhor?,Localização
 Across from the post office,Do outro lado do correio,Localização
 At 3 o'clock,Às três horas,Localização
 Be quiet,Fique quieto,Localização
@@ -331,6 +331,7 @@ When was the last time you talked to your mother?,Quando foi a última vez que v
 When will he be back?,Quando ele volta?,Hora e data
 When will it be ready?,Quando ficará pronto?,Hora e data
 Where are you going to go?,Onde você está indo?,Hora e data
+No hotel,O hotel,Hora e data
 Are you busy?,Você está ocupado?,No hotel
 Can we have some more bread please?,Posso ter um pouco de pão por favor?,No hotel
 Do you have any money?,Você tem dinheiro?,No hotel
@@ -520,6 +521,7 @@ Would you like to have dinner with me?,Você gostaria de jantar comigo?,Compras
 Would you like to rent a movie?,Você gostaria de alugar um filme?,Compras
 Can I have a glass of water please?,Posso ter um copo com água por favor?,Compras
 Can I use your phone?,Posso usar teu telefone?,Compras
+Do you have any vacancies?,Você tem férias?,Compras
 Do you have the number for a taxi?,Você tem um telefone de um táxi?,Compras
 Do you know her?,Você a conhece?,Compras
 Do you know where she is?,Você sabe onde ela está?,Compras
