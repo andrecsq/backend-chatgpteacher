@@ -1,12 +1,13 @@
 import openai
-import json
+from dotenv.main import dotenv_values
 
 from domain.chatgpt.constants \
     import Models, Roles, API_KEY_PATH, INITIAL_PROMPTS
 
 class GPTHandler:
     def __init__(self) -> None:
-        self.set_model_to_gpt3()
+        envs = dotenv_values('.env')
+        self.model = envs['DEFAULT_MODEL']
         self.initial_prompts = INITIAL_PROMPTS
         openai.api_key_path = API_KEY_PATH
 
@@ -17,11 +18,11 @@ class GPTHandler:
         self.model = Models.GPT4.value
 
     def get_formatted_user_input(self, phrase, translation):
-        formatted_user_input = "correct this translation:"
+        formatted_user_input = "correct this translation:\n"
         formatted_user_input +=  "{\n"
         formatted_user_input += f"\t\"original\": \"{phrase}\",\n"
         formatted_user_input += f"\t\"translation\": \"{translation}\"\n"
-        formatted_user_input += "}"
+        formatted_user_input += "}\n"
         formatted_user_input += "R:"
 
         return formatted_user_input
