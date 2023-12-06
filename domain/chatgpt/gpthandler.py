@@ -2,13 +2,13 @@ import openai
 from dotenv.main import dotenv_values
 
 from domain.chatgpt.constants \
-    import Models, Roles, API_KEY_PATH, INITIAL_PROMPTS
+    import Models, Roles, API_KEY_PATH
+from domain.chatgpt.prompts import generate_correction_prompt, generate_formatting_prompt
 
 class GPTHandler:
     def __init__(self) -> None:
         envs = dotenv_values('.env')
         self.model = envs['DEFAULT_MODEL']
-        self.initial_prompts = INITIAL_PROMPTS
         openai.api_key_path = API_KEY_PATH
 
     def set_model_to_gpt3(self) -> None:
@@ -17,48 +17,29 @@ class GPTHandler:
     def set_model_to_gpt4(self) -> None:
         self.model = Models.GPT4.value
 
-    def get_formatted_user_input(self, phrase, translation):
-        formatted_user_input = "correct this translation:\n"
-        formatted_user_input +=  "{\n"
-        formatted_user_input += f"\t\"original\": \"{phrase}\",\n"
-        formatted_user_input += f"\t\"translation\": \"{translation}\"\n"
-        formatted_user_input += "}\n"
-        formatted_user_input += "R:"
-
-        return formatted_user_input
-    
-    def convert_to_json(self, message_to_convert):
-        message = "convert this to a proper JSON. do not output anything other than the JSON. ```"
-        message += message_to_convert
-        message += "```"
+    def get_response_from_chat(self, prompt: list) -> str:
         response = openai.ChatCompletion.create(
             model=self.model,
-            messages=[
-                {
-                    "role": Roles.USER.value,
-                    "content": message
-                }
-            ]
+            messages=prompt
         )
 
         content = response['choices'][0]['message']['content']
-        return content
-
+        return content.strip()
     
-    def correct_translation(self, phrase, translation):
-        user_translation = {
-            "role": Roles.USER.value,
-            "content": self.get_formatted_user_input(phrase, translation),
-        }
+    def correct_translation(self, sentence_to_translate, translation_attempt):
 
-        messages_to_send = self.initial_prompts + [user_translation]
+        correction_prompt = generate_correction_prompt(sentence_to_translate, translation_attempt)
         
-        response = openai.ChatCompletion.create(
-            model=self.model,
-            messages=messages_to_send
-        )
+        correction_content = self.get_response_from_chat(correction_prompt)
 
-        content = response['choices'][0]['message']['content']
-        content = content.strip()
+        print("correction_content:")
+        print(correction_content)
+
+        formatting_prompt = generate_formatting_prompt(correction_prompt, correction_content)
         
-        return content
+        formatting_content = self.get_response_from_chat(formatting_prompt)
+
+        print("formatting_content:")
+        print(formatting_content)
+        
+        return formatting_content
