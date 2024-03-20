@@ -32,14 +32,8 @@ class GPTHandler:
         
         correction_content = self.get_response_from_chat(correction_prompt)
 
-        print("correction_content:")
-        print(correction_content)
-
         formatting_prompt = generate_formatting_prompt(correction_prompt, correction_content)
         
         formatting_content = self.get_response_from_chat(formatting_prompt)
-
-        print("formatting_content:")
-        print(formatting_content)
         
         return formatting_content
